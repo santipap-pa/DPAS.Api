@@ -1,13 +1,13 @@
-using DPAS.Api.Data;
+using DPAS.Api.Context;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<BaseDbContext>(options =>
 {
     var sqlConnectionString = builder.Configuration.GetConnectionString("Sql") ?? throw new InvalidOperationException("SQL is not configured.");
-    options.UseSqlite(sqlConnectionString);
+    options.UseSqlServer(sqlConnectionString);
 });
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>

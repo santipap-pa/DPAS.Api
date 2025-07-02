@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DPAS.Models
+namespace DPAS.Models.Data
 {
     public abstract class BaseModel
     {

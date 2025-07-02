@@ -1,7 +1,7 @@
 using DPAS.Api.Enums;
-using DPAS.Models;
+using DPAS.Models.Data;
 
-namespace DPAS.Api.Models
+namespace DPAS.Api.Models.Data
 {
     public class RegionModel : BaseModel
     {
