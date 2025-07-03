@@ -29,14 +29,23 @@ public static class QueryableExtensions
     public static async Task<PaginatedResultModel<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query,
         int page,
-        int pageSize)
+        int pageSize,
+        string? orderBy = null)
     {
-        var totalCount = await query.CountAsync();
+        if (!string.IsNullOrWhiteSpace(orderBy))
+        {
+            query = query.ApplyDynamicOrdering(orderBy);
+        }
+        else
+        {
+            query = query.OrderBy(e => EF.Property<object>(e!, "Id"));
+        }
 
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        var countQuery = query;
+        var dataQuery = query.Skip((page - 1) * pageSize).Take(pageSize);
+
+        var totalCount = await countQuery.CountAsync();
+        var items = await dataQuery.ToListAsync();
 
         return new PaginatedResultModel<T>
         {

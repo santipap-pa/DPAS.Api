@@ -1,4 +1,5 @@
 using DPAS.Api.Context;
+using DPAS.Api.Repositories;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -21,6 +22,9 @@ builder.Services.AddSingleton<IDatabase>(provider =>
     var multiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
     return multiplexer.GetDatabase();
 });
+
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

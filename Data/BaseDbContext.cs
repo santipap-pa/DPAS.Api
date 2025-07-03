@@ -13,5 +13,11 @@ namespace DPAS.Api.Context
 
         public DbSet<AlertSettingModel> AlertSettings { get; set; }
         public DbSet<RegionModel> Regions { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RegionModel>()
+                .OwnsOne(r => r.LocationCoordinates);
+        }
     }
 }
