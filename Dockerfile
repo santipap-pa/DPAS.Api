@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0
 WORKDIR /app
 
 COPY --from=build /app/out .
+COPY --from=build /app/Migrations ./Migrations
 
 RUN dotnet tool install --global dotnet-ef --version 9.0.6
 ENV PATH="$PATH:/root/.dotnet/tools"
