@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   dpas-api:
     build: .
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - sql-server
       - redis
