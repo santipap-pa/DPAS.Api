@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  dpas-api:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - sql-server
+      - redis
+    environment:
+      - ConnectionStrings__Sql=Server=sql-server;Database=DPAS;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=true
+      - ConnectionStrings__Redis=redis:6379
+    networks:
+      - dpas-network
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrongPassword123!
+    ports:
+      - "1434:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    networks:
+      - dpas-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - dpas-network
+
+volumes:
+  sql-data:
+  redis-data:
+
+networks:
+  dpas-network:
+    driver: bridge
