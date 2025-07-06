@@ -84,6 +84,12 @@ public class AlertController : ControllerBase
                 return StatusCode(400, $"RegionID '{request.RegionID}' does not exist.");
             }
 
+            var disasterTypeExists = region.DisasterTypes.Contains(request.DisasterType);
+            if (!disasterTypeExists)
+            {
+                return StatusCode(400, $"DisasterType '{request.DisasterType}' is not valid for RegionID '{request.RegionID}'.");
+            }
+
             var alert = _mapper.Map<AlertModel>(request);
             alert.RegionId = region.Id;
 
