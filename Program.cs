@@ -36,6 +36,7 @@ builder.Services.AddScoped<OpenWeatherService>();
 builder.Services.AddScoped<USGSService>();
 builder.Services.AddScoped<CalculateRiskService>();
 builder.Services.AddScoped<LoggingService>();
+builder.Services.AddScoped<MessageAlertService>();
 
 builder.Services.AddScoped<HttpClient>();
 builder.Services.AddAutoMapper(typeof(Program));

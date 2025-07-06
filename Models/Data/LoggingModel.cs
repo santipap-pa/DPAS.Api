@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using DPAS.Models.Data;
 
 namespace DPAS.Api.Models.Data
 {
-    public class LoggingModel : BaseModel
+    public class LoggingModel
     {
+        [Key]
+        public int Id { get; set; }
         public string? LogType { get; set; }
         public string? Action { get; set; }
         public string? Description { get; set; } 
