@@ -27,6 +27,7 @@ builder.Services.AddSingleton<IDatabase>(provider =>
 // Register Repositories
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IDisasterRepository, DisasterRepository>();
 
 //Register Services
 builder.Services.AddScoped<RedisCacheService>();

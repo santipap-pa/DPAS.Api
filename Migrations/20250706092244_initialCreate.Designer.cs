@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DPAS.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20250706040257_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250706092244_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace DPAS.Api.Migrations
 
                     b.Property<int>("DisasterType")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("RegionId")
                         .HasColumnType("uniqueidentifier");
@@ -65,6 +68,9 @@ namespace DPAS.Api.Migrations
                     b.PrimitiveCollection<string>("DisasterTypes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RegionID")
                         .IsRequired()

@@ -3,12 +3,18 @@ using DPAS.Models.External;
 
 namespace DPAS.Api.Services
 {
-    public class  OpenWeatherService
+    public class OpenWeatherService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<OpenWeatherService> _logger;
         private readonly string _apiKey;
+        private readonly string _baseUrl;
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
 
         public OpenWeatherService(HttpClient httpClient, IConfiguration configuration, ILogger<OpenWeatherService> logger)
         {
@@ -16,22 +22,47 @@ namespace DPAS.Api.Services
             _configuration = configuration;
             _logger = logger;
             _apiKey = _configuration["OpenWeather:ApiKey"] ?? throw new InvalidOperationException("OpenWeather ApiKey is missing");
+            _baseUrl = _configuration["OpenWeather:BaseUrl"] ?? throw new InvalidOperationException("OpenWeather BaseUrl is missing");
         }
 
-        public async Task<WeatherApiResponse> GetWeatherDataAsync(double latitude, double longitude)
+        public async Task<WeatherApiResponse?> GetWeatherDataAsync(double latitude, double longitude, CancellationToken cancellationToken = default)
         {
-            var url = $"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric";
-            
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            
-            var json = await response.Content.ReadAsStringAsync();
-            var weatherData = JsonSerializer.Deserialize<WeatherApiResponse>(json, new JsonSerializerOptions
+            var url = $"{_baseUrl}weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric";
+
+            try
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-            
-            return weatherData ?? throw new InvalidOperationException("Failed to deserialize weather data");
+                _logger.LogInformation("Fetching weather data for {Latitude}, {Longitude}", latitude, longitude);
+                
+                var response = await _httpClient.GetAsync(url, cancellationToken);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
+                
+                var weatherData = JsonSerializer.Deserialize<WeatherApiResponse>(json, JsonOptions);
+
+                _logger.LogInformation("Weather data retrieved for {Latitude}, {Longitude}", latitude, longitude);
+                return weatherData;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP error fetching weather data");
+                return null;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogWarning(ex, "Request cancelled for {Latitude}, {Longitude}", latitude, longitude);
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "JSON error for {Latitude}, {Longitude}", latitude, longitude);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error for {Latitude}, {Longitude}", latitude, longitude);
+                return null;
+            }
         }
     }
 }

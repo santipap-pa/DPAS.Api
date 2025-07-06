@@ -34,6 +34,9 @@ namespace DPAS.Api.Migrations
                     b.Property<int>("DisasterType")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("RegionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -62,6 +65,9 @@ namespace DPAS.Api.Migrations
                     b.PrimitiveCollection<string>("DisasterTypes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RegionID")
                         .IsRequired()

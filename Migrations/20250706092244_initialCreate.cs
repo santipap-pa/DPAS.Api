@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DPAS.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +20,7 @@ namespace DPAS.Api.Migrations
                     LocationCoordinates_Latitude = table.Column<double>(type: "float", nullable: false),
                     LocationCoordinates_Longitude = table.Column<double>(type: "float", nullable: false),
                     DisasterTypes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -36,6 +37,7 @@ namespace DPAS.Api.Migrations
                     RegionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DisasterType = table.Column<int>(type: "int", nullable: false),
                     ThresholdScore = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
