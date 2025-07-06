@@ -1,5 +1,6 @@
 using AutoMapper;
 using DPAS.Api.Dtos;
+using DPAS.Api.Enums;
 using DPAS.Api.Models.Data;
 using DPAS.Api.Models.Extensions;
 using DPAS.Api.Repositories;
@@ -114,7 +115,7 @@ public class AlertController : ControllerBase
                 return StatusCode(400, $"RegionID '{regionId}' does not exist.");
             }
 
-            var existingAlert = await _alertRepository.GetByIdAsync(region.Id);
+            var existingAlert = await _alertRepository.GetByRegionIdAndDisasterTypeAsync(region.Id, request.DisasterType);
             if (existingAlert == null)
             {
                 return StatusCode(404);
@@ -133,7 +134,7 @@ public class AlertController : ControllerBase
     }
 
     [HttpDelete("{regionId}")]
-    public async Task<ActionResult> DeleteAlert(string regionId)
+    public async Task<ActionResult> DeleteAlert(string regionId, [FromQuery] DisasterTypeEnum? disasterType)
     {
         try
         {
@@ -143,13 +144,33 @@ public class AlertController : ControllerBase
                 return StatusCode(400, $"RegionID '{regionId}' does not exist.");
             }
 
-            var deleted = await _alertRepository.DeleteAsync(region.Id);
-            if (!deleted)
+            if (disasterType == null)
             {
-                return NotFound();
+                var deleted = await _alertRepository.DeleteAsync(region.Id);
+                if (!deleted)
+                {
+                    return StatusCode(404);
+                }
+
+                return StatusCode(200);
+            }
+            else
+            {
+                var alert = await _alertRepository.GetByRegionIdAndDisasterTypeAsync(region.Id, disasterType.Value);
+                if (alert == null)
+                {
+                    return StatusCode(404);
+                }
+
+                var deleted = await _alertRepository.DeleteAsync(alert.Id);
+                if (!deleted)
+                {
+                    return StatusCode(404);
+                }
+
+                return StatusCode(200);
             }
 
-            return NoContent();
         }
         catch (Exception ex)
         {

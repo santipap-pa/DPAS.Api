@@ -1,4 +1,5 @@
 using DPAS.Api.Context;
+using DPAS.Api.Enums;
 using DPAS.Api.Extensions;
 using DPAS.Api.Models.Data;
 using DPAS.Api.Models.Extensions;
@@ -10,10 +11,12 @@ namespace DPAS.Api.Repositories
     {
         Task<AlertModel?> GetByIdAsync(Guid id);
         Task<PaginatedResultModel<AlertModel>> GetAllAsync(int pageNumber = 1, int pageSize = 10);
+        Task<AlertModel?> GetByRegionIdAndDisasterTypeAsync(Guid regionId, DisasterTypeEnum disasterType);
         Task<AlertModel> CreateAsync(AlertModel alert);
         Task<AlertModel> UpdateAsync(AlertModel alert);
         Task<bool> DeleteAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
+        Task<bool> HasAlertsAsync(Guid regionId);
     }
 
     public class AlertRepository : IAlertRepository
@@ -40,6 +43,17 @@ namespace DPAS.Api.Repositories
 
             return await query.ToPagedResultAsync(pageNumber, pageSize);
         }
+
+        public async Task<AlertModel?> GetByRegionIdAndDisasterTypeAsync(Guid regionId ,DisasterTypeEnum disasterType)
+        {
+            var query = _context.Alerts
+                .Include(a => a.Region)
+                .Where(a => a.RegionId == regionId && a.DisasterType == disasterType)
+                .AsQueryable();
+
+            return await query.FirstOrDefaultAsync();
+        }
+       
 
         public async Task<AlertModel> CreateAsync(AlertModel alert)
         {
@@ -80,6 +94,12 @@ namespace DPAS.Api.Repositories
         {
             return await _context.Alerts
                 .AnyAsync(a => a.Id == id);
+        }
+
+        public async Task<bool> HasAlertsAsync(Guid regionId)
+        {
+            return await _context.Alerts
+                .AnyAsync(a => a.RegionId == regionId);
         }
     }
 }

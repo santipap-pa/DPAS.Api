@@ -1,5 +1,6 @@
 using AutoMapper;
 using DPAS.Api.Dtos;
+using DPAS.Api.Extensions;
 using DPAS.Api.Models.Data;
 
 namespace DPAS.Api.Mapping
@@ -9,7 +10,8 @@ namespace DPAS.Api.Mapping
         public AlertMappingProfile()
         {
             CreateMap<AlertModel, GetAlertDto>()
-                .ForMember(dest => dest.RegionID, opt => opt.MapFrom(src => src.Region.RegionID));
+                .ForMember(dest => dest.RegionID, opt => opt.MapFrom(src => src.Region.RegionID))
+                .ForMember(dest => dest.DisasterType, opt => opt.MapFrom(src => src.DisasterType.GetDisplayName()));
             CreateMap<CreateAlertDto, AlertModel>()
                 .ForMember(dest => dest.RegionId, opt => opt.Ignore())
                 .ForMember(dest => dest.Region, opt => opt.Ignore())

@@ -14,12 +14,14 @@ public class RegionController : ControllerBase
 {
     private readonly ILogger<RegionController> _logger;
     private readonly IRegionRepository _regionRepository;
+    private readonly IAlertRepository _alertRepository;
     private readonly IMapper _mapper;
 
-    public RegionController(ILogger<RegionController> logger, IRegionRepository regionRepository, IMapper mapper)
+    public RegionController(ILogger<RegionController> logger, IRegionRepository regionRepository, IAlertRepository alertRepository, IMapper mapper)
     {
         _logger = logger;
         _regionRepository = regionRepository;
+        _alertRepository = alertRepository;
         _mapper = mapper;
     }
 
@@ -101,13 +103,13 @@ public class RegionController : ControllerBase
             var existingRegion = await _regionRepository.GetByRegionIdAsync(regionId);
             if (existingRegion == null)
             {
-                return NotFound();
+                return StatusCode(404);
             }
 
             _mapper.Map(request, existingRegion);
             var updatedRegion = await _regionRepository.UpdateAsync(existingRegion);
 
-            return Ok(_mapper.Map<GetRegionDto>(updatedRegion));
+            return StatusCode(200, _mapper.Map<GetRegionDto>(updatedRegion));
         }
         catch (Exception ex)
         {
@@ -121,13 +123,25 @@ public class RegionController : ControllerBase
     {
         try
         {
+            var region = await _regionRepository.GetByRegionIdAsync(regionId);
+            if (region == null)
+            {
+                return StatusCode(404);
+            }
+
+            var hasAlerts = await _alertRepository.HasAlertsAsync(region.Id);
+            if (hasAlerts)
+            {
+                return StatusCode(400, "Cannot delete region. Alert settings exist for this region.");
+            }
+
             var deleted = await _regionRepository.DeleteByRegionIdAsync(regionId);
             if (!deleted)
             {
-                return NotFound();
+                return StatusCode(404);
             }
 
-            return NoContent();
+            return StatusCode(200);
         }
         catch (Exception ex)
         {
