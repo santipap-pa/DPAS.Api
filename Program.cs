@@ -1,5 +1,6 @@
 using DPAS.Api.Context;
 using DPAS.Api.Repositories;
+using DPAS.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -23,8 +24,17 @@ builder.Services.AddSingleton<IDatabase>(provider =>
     return multiplexer.GetDatabase();
 });
 
+// Register Repositories
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+
+//Register Services
+builder.Services.AddScoped<RedisCacheService>();
+builder.Services.AddScoped<OpenWeatherService>();
+builder.Services.AddScoped<USGSService>();
+builder.Services.AddScoped<CalculateRiskService>();
+
+builder.Services.AddScoped<HttpClient>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();

@@ -1,3 +1,4 @@
+using DPAS.Api.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DPAS.Api.Controllers;
@@ -16,6 +17,19 @@ public class DisasterController : ControllerBase
     [HttpGet("risks")]
     public IActionResult GetDisasterRisks()
     {
-       return Ok();
+        return Ok();
+    }
+
+    [HttpGet("types")]
+    public IActionResult GetDisasterTypes()
+    {
+        return StatusCode(200, DisasterTypeEnum.GetValues(typeof(DisasterTypeEnum))
+            .Cast<DisasterTypeEnum>()
+            .Select(e => new
+            {
+                Id = (int)e,
+                Name = e.ToString()
+            })
+            .ToList());
     }
 }
