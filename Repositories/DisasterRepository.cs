@@ -19,10 +19,12 @@ namespace DPAS.Api.Repositories
         private readonly USGSService _usgsService;
         private readonly CalculateRiskService _calculateRiskService;
         private readonly RedisCacheService _redisCacheService;
+        private readonly MessageAlertService _messageAlertService;
         private readonly ILogger<DisasterRepository> _logger;
 
         public DisasterRepository(BaseDbContext context, ILogger<DisasterRepository> logger
-            , OpenWeatherService openWeatherService, USGSService usgsService, CalculateRiskService calculateRiskService, RedisCacheService redisCacheService)
+            , OpenWeatherService openWeatherService, USGSService usgsService, CalculateRiskService calculateRiskService,
+             RedisCacheService redisCacheService, MessageAlertService messageAlertService)
         {
             _context = context;
             _logger = logger;
@@ -30,6 +32,7 @@ namespace DPAS.Api.Repositories
             _usgsService = usgsService;
             _calculateRiskService = calculateRiskService;
             _redisCacheService = redisCacheService;
+            _messageAlertService = messageAlertService;
         }
 
         public async Task<List<GetDisasterRiskDto>> GetDisasterRiskAsync()
@@ -56,6 +59,11 @@ namespace DPAS.Api.Repositories
                     else
                     {
                         var disasterRiskDto = await CreateDisasterRiskDto(alert);
+
+                        if(disasterRiskDto?.AlertTrigger == true)
+                        {
+                            _messageAlertService.SendAlert($"High risk alert for {disasterRiskDto.DisasterType} in region {disasterRiskDto.RegionID}");
+                        }
                         if (disasterRiskDto != null)
                         {
                             await _redisCacheService.SetAsync(cacheKey, disasterRiskDto, TimeSpan.FromMinutes(1));
