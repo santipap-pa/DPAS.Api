@@ -11,6 +11,7 @@ services:
     environment:
       - ConnectionStrings__Sql=Server=sql-server;Database=DPAS;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=true
       - ConnectionStrings__Redis=redis:6379
+      - OpenWeather_ApiKey=467de1ab05ecba4a03867504cca85a47
     networks:
       - dpas-network
 
