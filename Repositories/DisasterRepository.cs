@@ -66,7 +66,7 @@ namespace DPAS.Api.Repositories
                         }
                         if (disasterRiskDto != null)
                         {
-                            await _redisCacheService.SetAsync(cacheKey, disasterRiskDto, TimeSpan.FromMinutes(1));
+                            await _redisCacheService.SetAsync(cacheKey, disasterRiskDto, TimeSpan.FromMinutes(15));
                             disasterRiskList.Add(disasterRiskDto);
                         }
                     }
