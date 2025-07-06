@@ -10,7 +10,7 @@ namespace DPAS.Api.Services
         }
 
 
-        public double CalculateFloodRisk(double rainfall)
+        public int CalculateFloodRisk(double rainfall)
         {
 
             return rainfall switch
@@ -24,7 +24,7 @@ namespace DPAS.Api.Services
             };
         }
 
-        public double CalculateEarthquakeRisk(double magnitude)
+        public int CalculateEarthquakeRisk(double magnitude)
         {
             return magnitude switch
             {
@@ -37,7 +37,7 @@ namespace DPAS.Api.Services
             };
         }
 
-        public double CalculateWildfireRisk(double temperature, double humidity)
+        public int CalculateWildfireRisk(double temperature, double humidity)
         {
             var temperatureRisk = temperature switch
             {
@@ -58,7 +58,7 @@ namespace DPAS.Api.Services
             };
 
             var combinedRisk = (temperatureRisk + humidityRisk) * 1.2;
-            return Math.Min(combinedRisk, 100);
+            return (int)Math.Min(combinedRisk, 100);
         }
     }
 }

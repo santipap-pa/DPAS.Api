@@ -6,19 +6,23 @@ namespace DPAS.Api.Services
     public class USGSService
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<USGSService> _logger;
+        private readonly string _baseUrl;
 
-        public USGSService(HttpClient httpClient, ILogger<USGSService> logger)
+        public USGSService(HttpClient httpClient, ILogger<USGSService> logger, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
             _logger = logger;
+            _baseUrl = _configuration["USGS:BaseUrl"] ?? throw new InvalidOperationException("USGS BaseUrl is missing");
         }
 
         public async Task<SeismicDataResponse> GetSeismicDataAsync(double latitude, double longitude)
         {
             try
             {
-                var url = $"https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude={latitude}&longitude={longitude}&maxradiuskm=100&minmagnitude=1&limit=1&orderby=time";
+                var url = $"{_baseUrl}query?format=geojson&latitude={latitude}&longitude={longitude}&maxradiuskm=100&minmagnitude=1&limit=1&orderby=time";
 
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
