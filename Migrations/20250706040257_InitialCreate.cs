@@ -29,7 +29,7 @@ namespace DPAS.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlertSettings",
+                name: "Alerts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -41,9 +41,9 @@ namespace DPAS.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertSettings", x => x.Id);
+                    table.PrimaryKey("PK_Alerts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AlertSettings_Regions_RegionId",
+                        name: "FK_Alerts_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
                         principalColumn: "Id",
@@ -51,8 +51,8 @@ namespace DPAS.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertSettings_RegionId",
-                table: "AlertSettings",
+                name: "IX_Alerts_RegionId",
+                table: "Alerts",
                 column: "RegionId");
         }
 
@@ -60,7 +60,7 @@ namespace DPAS.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AlertSettings");
+                name: "Alerts");
 
             migrationBuilder.DropTable(
                 name: "Regions");

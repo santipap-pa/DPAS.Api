@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DPAS.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20250703073120_InitialCreate")]
+    [Migration("20250706040257_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace DPAS.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DPAS.Api.Models.Data.AlertSettingModel", b =>
+            modelBuilder.Entity("DPAS.Api.Models.Data.AlertModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace DPAS.Api.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("AlertSettings");
+                    b.ToTable("Alerts");
                 });
 
             modelBuilder.Entity("DPAS.Api.Models.Data.RegionModel", b =>
@@ -78,7 +78,7 @@ namespace DPAS.Api.Migrations
                     b.ToTable("Regions");
                 });
 
-            modelBuilder.Entity("DPAS.Api.Models.Data.AlertSettingModel", b =>
+            modelBuilder.Entity("DPAS.Api.Models.Data.AlertModel", b =>
                 {
                     b.HasOne("DPAS.Api.Models.Data.RegionModel", "Region")
                         .WithMany()

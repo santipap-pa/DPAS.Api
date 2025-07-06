@@ -5,14 +5,14 @@ namespace DPAS.Api.Dtos
 {
     public class GetRegionDto
     {
-        public string RegionID { get; set; } = string.Empty;
+        public required string RegionID { get; set; }
         public LocationCoordinates? LocationCoordinates { get; set; }
         public List<string>? DisasterTypes { get; set; } 
     }
 
     public class CreateRegionDto
     {
-        public string RegionID { get; set; } = string.Empty;
+        public required string RegionID { get; set; }
         public LocationCoordinates? LocationCoordinates { get; set; }
         public List<DisasterTypeEnum>? DisasterTypes { get; set; }
     }

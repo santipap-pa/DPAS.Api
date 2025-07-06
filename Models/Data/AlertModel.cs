@@ -3,7 +3,7 @@ using DPAS.Models.Data;
 
 namespace DPAS.Api.Models.Data
 {
-    public class AlertSettingModel : BaseModel
+    public class AlertModel : BaseModel
     {
         public required Guid RegionId { get; set; }
         public required DisasterTypeEnum DisasterType { get; set; }

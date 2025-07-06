@@ -3,6 +3,7 @@ using DPAS.Api.Dtos;
 using DPAS.Api.Models.Data;
 using DPAS.Api.Models.Extensions;
 using DPAS.Api.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DPAS.Api.Controllers;
@@ -29,8 +30,8 @@ public class RegionController : ControllerBase
         {
             var result = await _regionRepository.GetAllAsync(pageNumber, pageSize);
             var regionDtos = _mapper.Map<List<GetRegionDto>>(result.Items);
-            
-            return Ok(PaginatedResultModel<GetRegionDto>.Paginated(regionDtos, result.TotalCount, result.PageNumber, result.PageSize));
+
+            return StatusCode(200, PaginatedResultModel<GetRegionDto>.Paginated(regionDtos, result.TotalCount, result.PageNumber, result.PageSize));
         }
         catch (Exception ex)
         {
@@ -39,22 +40,22 @@ public class RegionController : ControllerBase
         }
     }
 
-    [HttpGet("{regionsId}")]
-    public async Task<ActionResult<GetRegionDto>> GetRegionById(string regionsId)
+    [HttpGet("{regionId}")]
+    public async Task<ActionResult<GetRegionDto>> GetRegionById(string regionId)
     {
         try
         {
-            var region = await _regionRepository.GetByRegionIdAsync(regionsId);
+            var region = await _regionRepository.GetByRegionIdAsync(regionId);
             if (region == null)
             {
-                return NotFound();
+                return StatusCode(404);
             }
 
             return Ok(_mapper.Map<GetRegionDto>(region));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting region by region id {RegionId}", regionsId);
+            _logger.LogError(ex, "Error getting region by region id {RegionId}", regionId);
             return StatusCode(500, "Internal server error");
         }
     }
@@ -64,21 +65,21 @@ public class RegionController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return StatusCode(400, ModelState);
         }
-        
+
         try
         {
             if (await _regionRepository.ExistsByRegionIdAsync(request.RegionID))
             {
-                return Conflict("Region with this RegionID already exists");
+                return StatusCode(400, "Region with this RegionID already exists");
             }
 
             var region = _mapper.Map<RegionModel>(request);
             var createdRegion = await _regionRepository.CreateAsync(region);
             var regionDto = _mapper.Map<GetRegionDto>(createdRegion);
 
-            return CreatedAtAction(nameof(GetRegionById), new { regionsId = createdRegion.RegionID }, regionDto);
+            return StatusCode(201, regionDto);
         }
         catch (Exception ex)
         {
@@ -88,16 +89,16 @@ public class RegionController : ControllerBase
     }
 
     [HttpPut("{regionsId}")]
-    public async Task<ActionResult<GetRegionDto>> UpdateRegion(string regionsId, [FromBody] UpdateRegionDto request)
+    public async Task<ActionResult<GetRegionDto>> UpdateRegion(string regionId, [FromBody] UpdateRegionDto request)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return StatusCode(400, ModelState);
         }
-        
+
         try
         {
-            var existingRegion = await _regionRepository.GetByRegionIdAsync(regionsId);
+            var existingRegion = await _regionRepository.GetByRegionIdAsync(regionId);
             if (existingRegion == null)
             {
                 return NotFound();
@@ -105,22 +106,22 @@ public class RegionController : ControllerBase
 
             _mapper.Map(request, existingRegion);
             var updatedRegion = await _regionRepository.UpdateAsync(existingRegion);
-            
+
             return Ok(_mapper.Map<GetRegionDto>(updatedRegion));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating region {RegionId}", regionsId);
+            _logger.LogError(ex, "Error updating region {RegionId}", regionId);
             return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpDelete("{regionsId}")]
-    public async Task<ActionResult> DeleteRegion(string regionsId)
+    [HttpDelete("{regionId}")]
+    public async Task<ActionResult> DeleteRegion(string regionId)
     {
         try
         {
-            var deleted = await _regionRepository.DeleteByRegionIdAsync(regionsId);
+            var deleted = await _regionRepository.DeleteByRegionIdAsync(regionId);
             if (!deleted)
             {
                 return NotFound();
@@ -130,7 +131,7 @@ public class RegionController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting region {RegionId}", regionsId);
+            _logger.LogError(ex, "Error deleting region {RegionId}", regionId);
             return StatusCode(500, "Internal server error");
         }
     }
