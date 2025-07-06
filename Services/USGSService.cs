@@ -8,13 +8,15 @@ namespace DPAS.Api.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<USGSService> _logger;
+        private readonly LoggingService _loggingService;
         private readonly string _baseUrl;
 
-        public USGSService(HttpClient httpClient, ILogger<USGSService> logger, IConfiguration configuration)
+        public USGSService(HttpClient httpClient, ILogger<USGSService> logger, IConfiguration configuration, LoggingService loggingService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _logger = logger;
+            _loggingService = loggingService;
             _baseUrl = _configuration["USGS:BaseUrl"] ?? throw new InvalidOperationException("USGS BaseUrl is missing");
         }
 
@@ -30,6 +32,8 @@ namespace DPAS.Api.Services
                 var json = await response.Content.ReadAsStringAsync();
                 var earthquakeData = JsonSerializer.Deserialize<USGSResponse>(json);
 
+                await _loggingService.LogApiUsageAsync(url, "GET", (int)response.StatusCode, response.Content.Headers.ContentLength ?? 0);
+                _logger.LogInformation("Seismic data retrieved for {Latitude}, {Longitude}", latitude,longitude);
                 return new SeismicDataResponse
                 {
                     Magnitude = earthquakeData?.Features?.FirstOrDefault()?.Properties?.Mag ?? 0.0

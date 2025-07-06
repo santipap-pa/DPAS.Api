@@ -10,17 +10,20 @@ namespace DPAS.Api.Services
         private readonly ILogger<OpenWeatherService> _logger;
         private readonly string _apiKey;
         private readonly string _baseUrl;
+        private readonly LoggingService _loggingService;
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true
         };
 
-        public OpenWeatherService(HttpClient httpClient, IConfiguration configuration, ILogger<OpenWeatherService> logger)
+        public OpenWeatherService(HttpClient httpClient, IConfiguration configuration, ILogger<OpenWeatherService> logger, 
+            LoggingService loggingService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _logger = logger;
+            _loggingService = loggingService;
             _apiKey = _configuration["OpenWeather:ApiKey"] ?? throw new InvalidOperationException("OpenWeather ApiKey is missing");
             _baseUrl = _configuration["OpenWeather:BaseUrl"] ?? throw new InvalidOperationException("OpenWeather BaseUrl is missing");
         }
@@ -40,6 +43,7 @@ namespace DPAS.Api.Services
                 
                 var weatherData = JsonSerializer.Deserialize<WeatherApiResponse>(json, JsonOptions);
 
+                await _loggingService.LogApiUsageAsync(url, "GET", (int)response.StatusCode, response.Content.Headers.ContentLength ?? 0);
                 _logger.LogInformation("Weather data retrieved for {Latitude}, {Longitude}", latitude, longitude);
                 return weatherData;
             }

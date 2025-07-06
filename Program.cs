@@ -28,12 +28,14 @@ builder.Services.AddSingleton<IDatabase>(provider =>
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IDisasterRepository, DisasterRepository>();
+builder.Services.AddScoped<ILoggingRepository, LoggingRepository>();
 
 //Register Services
 builder.Services.AddScoped<RedisCacheService>();
 builder.Services.AddScoped<OpenWeatherService>();
 builder.Services.AddScoped<USGSService>();
 builder.Services.AddScoped<CalculateRiskService>();
+builder.Services.AddScoped<LoggingService>();
 
 builder.Services.AddScoped<HttpClient>();
 builder.Services.AddAutoMapper(typeof(Program));

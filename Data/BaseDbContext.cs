@@ -13,6 +13,7 @@ namespace DPAS.Api.Context
 
         public DbSet<RegionModel> Regions { get; set; }
         public DbSet<AlertModel> Alerts { get; set; }
+        public DbSet<LoggingModel> Logs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
